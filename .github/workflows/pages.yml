@@ -1,0 +1,57 @@
+# Publishes the PUBLIC pages of the site to GitHub Pages (static export).
+# The admin, member area and QR check-in need a server, so they are not part of this build.
+# Setup: repo Settings -> Pages -> Source: "GitHub Actions". See docs/deployment.md.
+name: Deploy public site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # Schedule and coach content is read from Supabase at build time, so rebuild daily.
+    - cron: "0 20 * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_STATIC_SITE: "true"
+      NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+      # Origin only: Next.js adds the base path itself when building absolute metadata URLs.
+      NEXT_PUBLIC_SITE_URL: https://${{ github.repository_owner }}.github.io
+      # Public values (safe in the browser). Set under Settings -> Secrets and variables -> Actions -> Variables.
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Static export can't include server-only features (Server Actions, cookies, proxy).
+      - name: Remove routes that need a server
+        run: rm -rf app/admin app/member app/m app/checkin components/admin components/member components/auth proxy.ts
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

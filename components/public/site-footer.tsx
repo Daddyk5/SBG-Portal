@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { NAV_LINKS, SITE } from "@/lib/site";
+import { NAV_LINKS, SITE, STATIC_SITE } from "@/lib/site";
 
 export function SiteFooter() {
   return (
@@ -46,9 +46,11 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-border py-5 text-center text-xs text-muted">
         © {new Date().getFullYear()} {SITE.name}.{" "}
-        <Link href="/admin" className="hover:text-foreground">
-          Staff
-        </Link>
+        {!STATIC_SITE && (
+          <Link href="/admin" className="hover:text-foreground">
+            Staff
+          </Link>
+        )}
       </div>
     </footer>
   );

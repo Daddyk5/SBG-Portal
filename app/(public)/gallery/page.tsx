@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { PageHero } from "@/components/public/page-hero";
 import { GALLERY } from "@/lib/gallery";
-import { SITE } from "@/lib/site";
+import { BASE_PATH, SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -21,7 +21,7 @@ export default function GalleryPage() {
               <li key={item.src} className="mb-4 break-inside-avoid">
                 <figure className="card overflow-hidden">
                   <a
-                    href={item.src}
+                    href={`${BASE_PATH}${item.src}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Open full size: ${item.caption ?? item.alt}`}

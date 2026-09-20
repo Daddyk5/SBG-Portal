@@ -92,6 +92,17 @@ On the host, set the three environment variables from step 5. **`NEXT_PUBLIC_SIT
 
 Then build and deploy (`npm run build`; hosts like Vercel do this for you from the Git repository).
 
+### Public site on GitHub Pages (optional)
+
+[`.github/workflows/pages.yml`](../.github/workflows/pages.yml) publishes the **public pages only** (home, programs, schedule, coaches, gallery, contact) to `https://<owner>.github.io/<repo>/`. GitHub Pages serves static files, so the admin, member area and QR check-in are **not** on it — those need a Next.js host (above). The workflow deletes those routes before building; nothing in your working copy changes.
+
+One-time setup in the GitHub repo:
+
+1. **Settings → Pages → Build and deployment → Source: GitHub Actions.**
+2. **Settings → Secrets and variables → Actions → Variables**: add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (the same public values as in `.env.local`). Without them the site still builds, but Schedule and Coaches show "coming soon".
+
+It deploys on every push to `main`, and rebuilds daily because schedule and coach content is read from Supabase **at build time** (a change in the admin appears after the next rebuild — run the workflow manually from the **Actions** tab to publish sooner). To build it locally, set `NEXT_PUBLIC_STATIC_SITE=true` and `NEXT_PUBLIC_BASE_PATH=/<repo>`, and remove the same routes the workflow removes.
+
 ### Go-live checklist
 
 - [ ] All four migrations applied (`npm run db:migrate -- --status` shows nothing pending); a first admin exists and can sign in

@@ -19,7 +19,13 @@ export const SITE = {
   },
 } as const;
 
-export const NAV_LINKS = [
+/** True in the GitHub Pages build, which has the public pages only (no admin or member area). */
+export const STATIC_SITE = process.env.NEXT_PUBLIC_STATIC_SITE === "true";
+
+/** Prefix for paths under /public in plain <a>/<img> tags (next/image and <Link> add it themselves). */
+export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+const ALL_NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/programs", label: "Programs" },
   { href: "/schedule", label: "Schedule" },
@@ -28,3 +34,7 @@ export const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
   { href: "/member", label: "My Progress" },
 ] as const;
+
+export const NAV_LINKS = STATIC_SITE
+  ? ALL_NAV_LINKS.filter((link) => link.href !== "/member")
+  : ALL_NAV_LINKS;
