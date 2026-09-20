@@ -1,0 +1,5 @@
+# Netlify's secrets scanner fails the build if an env var's value appears in the output.
+# These three are PUBLIC by design (they are sent to every visitor's browser), so skip them.
+# SUPABASE_SECRET_KEY and SUPABASE_DB_URL are deliberately NOT listed: they must stay scanned.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
