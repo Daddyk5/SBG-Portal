@@ -1,26 +1,299 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens — the palette of the Saved By Grace logo: WHITE, BLUE, RED and BLACK.
+ * Everything reads these variables, so re-branding = editing this block.
+ * The page background is ONE continuous layer (see .backdrop below): sections are
+ * transparent, so there are no coloured bands.
+ *
+ * Members can pick a theme (light/dark) and accent in Settings. That is done by
+ * wrapping their pages in <ThemeScope>, which sets data-theme / data-accent; the
+ * selectors below react to those attributes.
+ */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --background: #fbfbfc; /* white */
+  --foreground: #0b0b0c; /* black */
+  --muted: #57575c;
+  --surface: rgb(255 255 255 / 0.8); /* glass cards */
+  --surface-solid: #ffffff; /* menus / places that must be opaque */
+  --border: rgb(10 10 12 / 0.11);
+
+  --brand: #c8202e; /* logo red — buttons */
+  --brand-hover: #ad1a27;
+  --brand-fg: #ffffff;
+  --brand-text: #b01a28; /* red used as text */
+  --accent-text: #2456b5; /* logo blue used as text */
+
+  --grad-a: #c8202e; /* gradient headings: red -> blue */
+  --grad-b: #2456b5;
+
+  --glow-blue: rgb(36 86 181 / 0.13);
+  --glow-red: rgb(200 32 46 / 0.1);
+  --grid: rgb(10 10 12 / 0.05);
+
+  --danger: #b91c1c;
+  --success: #15803d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --background: #060607; /* black */
+    --foreground: #f6f6f7; /* white */
+    --muted: #a1a1aa;
+    --surface: rgb(255 255 255 / 0.055);
+    --surface-solid: #111113;
+    --border: rgb(255 255 255 / 0.11);
+
+    --brand: #d9283a;
+    --brand-hover: #c21f30;
+    --brand-text: #ff7a86;
+    --accent-text: #7aa7ff;
+
+    --grad-a: #ff6674;
+    --grad-b: #6d9cff;
+
+    --glow-blue: rgb(60 110 220 / 0.22);
+    --glow-red: rgb(230 50 65 / 0.15);
+    --grid: rgb(255 255 255 / 0.04);
+
+    --danger: #f87171;
+    --success: #4ade80;
+  }
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #060607;
+  --foreground: #f6f6f7;
+  --muted: #a1a1aa;
+  --surface: rgb(255 255 255 / 0.055);
+  --surface-solid: #111113;
+  --border: rgb(255 255 255 / 0.11);
+
+  --brand: #d9283a;
+  --brand-hover: #c21f30;
+  --brand-text: #ff7a86;
+  --accent-text: #7aa7ff;
+
+  --grad-a: #ff6674;
+  --grad-b: #6d9cff;
+
+  --glow-blue: rgb(60 110 220 / 0.22);
+  --glow-red: rgb(230 50 65 / 0.15);
+  --grid: rgb(255 255 255 / 0.04);
+
+  --danger: #f87171;
+  --success: #4ade80;
+}
+
+/* Member-chosen accent colour (buttons and highlights). Red is the default. */
+[data-accent="blue"] {
+  --brand: #2456b5;
+  --brand-hover: #1c4494;
+  --brand-fg: #ffffff;
+}
+[data-accent="mono"] {
+  --brand: #111113;
+  --brand-hover: #000000;
+  --brand-fg: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  [data-accent="blue"]:not([data-theme="light"]) {
+    --brand: #3b6fd6;
+    --brand-hover: #2f5fbf;
+  }
+  [data-accent="mono"]:not([data-theme="light"]) {
+    --brand: #f6f6f7;
+    --brand-hover: #ffffff;
+    --brand-fg: #0a0a0a;
+  }
+}
+[data-theme="dark"][data-accent="blue"] {
+  --brand: #3b6fd6;
+  --brand-hover: #2f5fbf;
+}
+[data-theme="dark"][data-accent="mono"] {
+  --brand: #f6f6f7;
+  --brand-hover: #ffffff;
+  --brand-fg: #0a0a0a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-surface-solid: var(--surface-solid);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-fg: var(--brand-fg);
+  --color-brand-text: var(--brand-text);
+  --color-accent: var(--accent-text);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Motion */
+@theme {
+  --animate-fade-up: fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 1.8s linear infinite;
+  --animate-belt: belt 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  --animate-float: float 7s ease-in-out infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes belt {
+    0% {
+      transform: translateX(-120%);
+    }
+    100% {
+      transform: translateX(320%);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-3deg);
+    }
+    50% {
+      transform: translateY(-8px) rotate(-3deg);
+    }
   }
 }
 
+html {
+  background: var(--background);
+  scroll-behavior: smooth;
+}
+
 body {
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/*
+ * One seamless backdrop for the whole site: soft blue/red glows + a faint grid.
+ * <body> gets it by default; a themed member area gets its own copy so the glow
+ * follows the member's chosen theme.
+ */
+body::before,
+body::after,
+.themed::before,
+.themed::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+body::before,
+.themed::before {
+  background:
+    radial-gradient(46rem 30rem at 6% -6%, var(--glow-blue), transparent 65%),
+    radial-gradient(40rem 28rem at 98% 4%, var(--glow-red), transparent 65%),
+    radial-gradient(54rem 34rem at 50% 108%, var(--glow-blue), transparent 65%);
+}
+body::after,
+.themed::after {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(ellipse 80% 55% at 50% 0%, #000 0%, transparent 75%);
+}
+.themed {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--brand) 35%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Shared primitives used across the public site, /admin and member pages */
+@utility btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-brand text-brand-fg shadow-[0_8px_24px_-10px_var(--brand)] hover:bg-brand-hover;
+}
+@utility btn-secondary {
+  @apply btn border border-border bg-surface text-foreground backdrop-blur-md hover:bg-foreground/10;
+}
+@utility btn-danger {
+  @apply btn border border-danger/40 bg-transparent text-danger hover:bg-danger/10;
+}
+@utility field {
+  @apply block min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-base text-foreground backdrop-blur-md transition placeholder:text-muted/70 focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent/50;
+}
+@utility label {
+  @apply mb-1 block text-sm font-medium;
+}
+@utility card {
+  @apply rounded-2xl border border-border bg-surface shadow-[0_10px_40px_-16px_rgb(0_0_0/0.25)] backdrop-blur-md;
+}
+@utility text-gradient {
+  background-image: linear-gradient(95deg, var(--grad-a), var(--grad-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility eyebrow {
+  @apply inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-widest text-accent backdrop-blur-md;
+}
+
+/* Loading skeleton with a soft moving highlight */
+@utility skeleton {
+  @apply animate-shimmer rounded-xl bg-foreground/[0.06];
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    color-mix(in srgb, var(--foreground) 9%, transparent) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
 }
